@@ -1,38 +1,12 @@
-# create-svelte
+# MeowM
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## 在桌面看到所有想看的通知
 
-## Creating a project
+> 在做了,在做了
 
-If you're seeing this, you've probably already done this step. Congrats!
+目前alpha仅支持显示QQ的消息
+如需使用请通过[LLOneBot](https://github.com/LLOneBot/LLOneBot)配置正向ws链接端口为本地3002
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## 注意
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+本项目正在施工中,有不好的体验请见谅
