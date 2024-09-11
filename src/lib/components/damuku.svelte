@@ -32,7 +32,7 @@
 
 		// 确保每次都创建一个新的数组引用
 		damukuMessages = [...damukuMessages, message];
-		damukuMessages =[...damukuMessages];
+		damukuMessages = [...damukuMessages];
 		// 滚动到底部
 		scrollChatBottom('smooth');
 
@@ -59,6 +59,8 @@
 		if (message.message_type === 'group') {
 			url = `https://p.qlogo.cn/gh/${message.group_id}/${message.group_id}/0`;
 		} else if (message.message_type === 'private') {
+			url = `https://q1.qlogo.cn/g?b=qq&nk=${message.user_id}&s=100`;
+		} else if (message.sub_type === 'poke') {
 			url = `https://q1.qlogo.cn/g?b=qq&nk=${message.user_id}&s=100`;
 		}
 
@@ -96,20 +98,33 @@
 							{message.sender.card}
 						{:else if message.message_type === 'private'}
 							{message.sender.nickname}
+						{:else if message.sub_type === 'poke'}
+							{message.user_id}
+						{:else}
+							{message}
 						{/if}
 					</div>
 				</div>
 				<p class="message-content">
 					<!-- message.message是一个数组应该循环渲染,并且每个message的type有所不同 -->
-					{#each message.message as msg, i (msg)}
-						{#if msg.type === 'text'}
-							{msg.data.text}
-						{:else if msg.type === 'at'}
-							@{msg.data.qq}
-						{:else if msg.type === 'image'}
-							<img src={msg.data.url} alt="image" />
-						{/if}
-					{/each}
+					{#if message.sub_type === 'poke'}
+						{#each message.raw_info as info, i (info)}
+							<!-- 根据 raw_info 的结构渲染内容 -->
+							{#if info.type === 'nor'}
+								{info.txt}
+							{/if}
+						{/each}
+					{:else}
+						{#each message.message as msg, i (msg)}
+							{#if msg.type === 'text'}
+								{msg.data.text}
+							{:else if msg.type === 'at'}
+								@{msg.data.qq}
+							{:else if msg.type === 'image'}
+								<img src={msg.data.url} alt="image" />
+							{/if}
+						{/each}
+					{/if}
 				</p>
 			</div>
 		{/each}
