@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { appWindow } from '@tauri-apps/api/window';
+	import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 	import { onMount } from 'svelte';
 
 	import Damuku from '$lib/components/damuku.svelte';
 
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
+const appWindow = getCurrentWebviewWindow()
 
 	let iftop: boolean = false;
 	onMount(() => {

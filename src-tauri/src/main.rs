@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use futures_util::StreamExt;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 use tokio;
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
@@ -13,12 +13,12 @@ struct Payload {
 
 #[tauri::command]
 fn set_window_on_top(app: tauri::AppHandle, always_on_top: bool) {
-    let window = app.get_window("main").unwrap();
+    let window = app.get_webview_window("main").unwrap();
     window.set_always_on_top(always_on_top).unwrap();
 }
 
 #[tauri::command]
-async fn keep_say_hello(window: tauri::Window) {
+async fn keep_say_hello(window: tauri::WebviewWindow) {
     // 连接到 WebSocket 服务器
     let url = url::Url::parse("ws://localhost:3002").unwrap();
     let (ws_stream, _) = connect_async(url.as_str())
@@ -63,7 +63,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![keep_say_hello, set_window_on_top])
         .setup(|app| {
-            let window = app.get_window("main").unwrap();
+            let window = app.get_webview_window("main").unwrap();
 
             // 通过调用命令来触发事件
             tauri::async_runtime::spawn(keep_say_hello(window));

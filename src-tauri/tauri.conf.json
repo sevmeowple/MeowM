@@ -1,106 +1,64 @@
 {
-	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
-	"build": {
-		"beforeBuildCommand": "bun run build",
-		"beforeDevCommand": "bun run dev",
-		"devPath": "http://localhost:5173",
-		"distDir": "../build",
-		"withGlobalTauri": true
-	},
-	"package": {
-		"productName": "meowq",
-		"version": "0.1.0"
-	},
-	"tauri": {
-		"allowlist": {
-			"all": false,
-			"window": {
-				"all": false,
-				"center": false,
-				"close": true,
-				"create": false,
-				"hide": true,
-				"maximize": true,
-				"minimize": true,
-				"print": false,
-				"requestUserAttention": false,
-				"setAlwaysOnTop": false,
-				"setClosable": false,
-				"setContentProtected": false,
-				"setCursorGrab": false,
-				"setCursorIcon": false,
-				"setCursorPosition": false,
-				"setCursorVisible": false,
-				"setDecorations": false,
-				"setFocus": false,
-				"setFullscreen": false,
-				"setIcon": false,
-				"setIgnoreCursorEvents": false,
-				"setMaxSize": false,
-				"setMaximizable": false,
-				"setMinSize": false,
-				"setMinimizable": false,
-				"setPosition": false,
-				"setResizable": false,
-				"setSize": false,
-				"setSkipTaskbar": false,
-				"setTitle": true,
-				"show": false,
-				"startDragging": true,
-				"unmaximize": true,
-				"unminimize": true
-			}
-		},
-		"bundle": {
-			"active": true,
-			"category": "DeveloperTool",
-			"copyright": "",
-			"deb": {
-				"depends": []
-			},
-			"externalBin": [],
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
-			"identifier": "com.sevmeowple.meowq",
-			"longDescription": "",
-			"macOS": {
-				"entitlements": null,
-				"exceptionDomain": "",
-				"frameworks": [],
-				"providerShortName": null,
-				"signingIdentity": null
-			},
-			"resources": [],
-			"shortDescription": "",
-			"targets": "all",
-			"windows": {
-				"certificateThumbprint": null,
-				"digestAlgorithm": "sha256",
-				"timestampUrl": ""
-			}
-		},
-		"security": {
-			"csp": null
-		},
-		"updater": {
-			"active": false
-		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"height": 600,
-				"resizable": true,
-				"title": "MeowQ",
-				"width": 800,
-				"decorations": false,
-				"transparent": true
-			
-			}
-		]
-	}
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "bun run build",
+    "beforeDevCommand": "bun run dev",
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:5173"
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  },
+  "productName": "meowq",
+  "version": "0.1.0",
+  "identifier": "com.sevmeowple.meowq",
+  "plugins": {},
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "MeowQ",
+        "width": 800,
+        "decorations": false,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
 }
