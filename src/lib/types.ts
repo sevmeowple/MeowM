@@ -36,14 +36,14 @@ interface Sender {
 //     "group_id": 835258191
 // }
 
-interface Say{
-    text?: string;
-    name?: string;
-    qq?: string;
-    file?: string;
-    file_size?: string | number;
-    url?: string;
-    subtype?: number;
+interface Say {
+	text?: string;
+	name?: string;
+	qq?: string;
+	file?: string;
+	file_size?: string | number;
+	url?: string;
+	subtype?: number;
 }
 
 // 定义消息中的数据部分
@@ -60,11 +60,12 @@ interface MessageData {
 
 // 定义整个消息的接口
 interface Message {
+	raw_info: any[];
 	self_id: number;
 	user_id: number;
 	time: number;
 	message_id: number;
-	real_id: number;
+	real_id?: number;
 	message_seq: number;
 	message_type: string; // 比如 "group"
 	sender: Sender;
@@ -75,7 +76,6 @@ interface Message {
 	message_format: string; // "array"
 	post_type: string; // 比如 "message"
 	group_id?: number;
-
 }
 
 export type { Sender, MessageData, Message };
