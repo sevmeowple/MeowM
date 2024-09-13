@@ -1,6 +1,5 @@
 import { GetLinked } from '$lib/utils/web';
 import { storeManager } from '$lib/stores/DataStore';
-import { type Writable } from 'svelte/store';
 import WebSocket from '@tauri-apps/plugin-websocket';
 
 import { init, classModule, propsModule, styleModule, eventListenersModule } from 'snabbdom';
@@ -29,20 +28,19 @@ interface BaseChatLink {
 	// 可以用来屏蔽的字段
 	hide?: string[];
 	show?: string[];
-	woke_type: 'show' | 'hide'; //show表示白名单，hide表示黑名单
+	mode: 'show' | 'hide'; //show表示白名单，hide表示黑名单
 	// 唯一标识
 	id: string;
 	link_status: boolean;
 	// 链接地址
 	link_url: string;
-	store?: Writable<BaseChat[]>;
 	ws?: WebSocket;
 	// 链接
 	Init(): void;
 	Link(): void;
 	DisLink(): void;
-	Hide: () => void;
-	DeHide: () => void;
+	Show(id: string): void; //白名单模式下的显示
+	Hide(id: string): void; //黑名单模式下的隐藏
 	TypeChange: () => void;
 	toBaseData(data: any): BaseChat;
 	DataUpdate(baseData: BaseChat): void;
@@ -55,23 +53,33 @@ class BaseChatLink implements BaseChatLink {
 	link_status: boolean = false;
 
 	constructor(woke_type: 'show' | 'hide', id: string, link_url: string) {
-		this.woke_type = woke_type;
+		this.mode = woke_type;
 		this.id = id;
 		this.link_url = link_url;
+		if (woke_type === 'show') {
+			this.show = [];
+		}
+		if (woke_type === 'hide') {
+			this.hide = [];
+		}
 	}
 
 	Init(): void {
 		// 初始化store
-		storeManager.addStore(this.id);
-		this.store = storeManager.getStore(this.id);
-		console.log(this.store);
 	}
 
 	DataUpdate(baseData: BaseChat): void {
-		this.store?.update((data) => {
-			data.push(baseData);
-			return data;
-		});
+		if (this.mode === 'show') {
+			// 处理白名单模式
+			if (this.show && this.show.includes(baseData.session_id)) {
+				storeManager.updateStore(this.id, baseData);
+			}
+		} else if (this.mode === 'hide') {
+			// 处理黑名单模式
+			if (!this.hide || !this.hide.includes(baseData.session_id)) {
+				storeManager.updateStore(this.id, baseData);
+			}
+		}
 	}
 
 	async Link() {
@@ -90,6 +98,34 @@ class BaseChatLink implements BaseChatLink {
 			this.ws.disconnect();
 		}
 		this.link_status = false;
+	}
+
+	Show(id: string) {
+		if (this.mode === 'show') {
+			if (!this.show) {
+				this.show = [];
+			}
+			this.show.push(id);
+		} else {
+			// 如果是黑名单模式,应该先从黑名单中删除
+			if (this.hide) {
+				this.hide = this.hide.filter((item) => item !== id);
+			}
+		}
+	}
+
+	Hide(id: string) {
+		if (this.mode === 'hide') {
+			if (!this.hide) {
+				this.hide = [];
+			}
+			this.hide.push(id);
+		} else {
+			// 如果是白名单模式,应该先从白名单中删除
+			if (this.show) {
+				this.show = this.show.filter((item) => item !== id);
+			}
+		}
 	}
 
 	RenderData(baseData: BaseChat) {}

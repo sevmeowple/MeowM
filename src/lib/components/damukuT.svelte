@@ -1,21 +1,29 @@
 <script lang="ts">
-	import { QQChatLink } from '$lib/plugins/QQ';
+	// import { QQChatLink } from '$lib/plugins/QQ';
 	import { type BaseChat } from '$lib/core/UnionCore';
 	import { onMount } from 'svelte';
+	import { storeManager, type SignedChat } from '$lib/stores/DataStore';
+	import { selfStatus } from '$lib/stores/ChatLinkStore';
 
 	let box_section: HTMLElement;
-
+	let store = storeManager.getStore();
+	let chatstatus: boolean = false;
 	let show: BaseChat[];
-	let QQ = new QQChatLink('hide', 'QQ', 'ws://127.0.0.1:3002');
-	QQ.Init();
-	QQ.Link();
+	// let QQ = new QQChatLink('hide', 'QQ', 'ws://127.0.0.1:3002');
+	// QQ.Init();
+	// QQ.Link();
 
-	// 观察QQ的store是否有变化
-	if (QQ.store) {
-		QQ.store.subscribe((value) => {
+	if (store) {
+		store.subscribe((value) => {
 			console.log(value);
 			show = value;
 			scrollChatBottom('smooth');
+		});
+	}
+
+	if (selfStatus) {
+		selfStatus.subscribe((value) => {
+			chatstatus = value;
 		});
 	}
 
@@ -33,39 +41,54 @@
 	});
 </script>
 
-<div class="box">
-	<section class="box_section" bind:this={box_section}>
-		{#each show as item}
+{#if chatstatus}
+	<div class="box">
+		<section class="box_section" bind:this={box_section}>
+			{#each show as item}
+				<div class="box-msg">
+					<div class="sender">
+						{#if item.sender_img_type}
+							{#if item.sender_img_type === 'file' && item.sender_img_file}
+								<img
+									class="sender-img"
+									src={URL.createObjectURL(item.sender_img_file)}
+									alt="头像"
+								/>
+							{:else if item.sender_img_type === 'url' && item.sender_img_url}
+								<img class="sender-img" src={item.sender_img_url} alt="头像" />
+							{/if}
+						{/if}
+						<p class="sender-id">{item.sender_id}</p>
+					</div>
+					<div class="messages">
+						{#each item.raw as msg}
+							{#if msg.type === 'text'}
+								<p class="message-text message">{msg.text}</p>
+							{:else if msg.type === 'image_url'}
+								<img class="message-img message" src={msg.url} alt="图片走丢了" />
+							{:else if msg.type === 'image_file' && msg.img_file}
+								<img
+									class="message-img message"
+									src={URL.createObjectURL(msg.img_file)}
+									alt="图片走丢了"
+								/>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			{/each}
+		</section>
+	</div>
+{:else}
+	<div class="box">
+		<section class="box_section" bind:this={box_section}>
 			<div class="box-msg">
-				<div class="sender">
-					{#if item.sender_img_type}
-						{#if item.sender_img_type === 'file' && item.sender_img_file}
-							<img class="sender-img" src={URL.createObjectURL(item.sender_img_file)} alt="头像" />
-						{:else if item.sender_img_type === 'url' && item.sender_img_url}
-							<img class="sender-img" src={item.sender_img_url} alt="头像" />
-						{/if}
-					{/if}
-					<p class="sender-id">{item.sender_id}</p>
-				</div>
-				<div class="messages">
-					{#each item.raw as msg}
-						{#if msg.type === 'text'}
-							<p class="message-text message">{msg.text}</p>
-						{:else if msg.type === 'image_url'}
-							<img class="message-img message" src={msg.url} alt="图片走丢了" />
-						{:else if msg.type === 'image_file' && msg.img_file}
-							<img
-								class="message-img message"
-								src={URL.createObjectURL(msg.img_file)}
-								alt="图片走丢了"
-							/>
-						{/if}
-					{/each}
-				</div>
+				<p>当前未连接任何信源</p>
+				<p>请前往<a href="/settings">settings</a>进行连接</p>
 			</div>
-		{/each}
-	</section>
-</div>
+		</section>
+	</div>
+{/if}
 
 <style lang="postcss">
 	.box {
@@ -132,5 +155,13 @@
 	.message {
 		width: fit-content;
 		height: inherit;
+	}
+
+	a {
+		color: var(--color-primary);
+	}
+
+	a:hover {
+		text-decoration: underline;
 	}
 </style>
