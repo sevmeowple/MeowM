@@ -62,6 +62,7 @@ async fn keep_say_hello(window: tauri::WebviewWindow) {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_websocket::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![keep_say_hello, set_window_on_top])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();

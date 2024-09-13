@@ -1,5 +1,4 @@
-import { BaseChatLink, type BaseChat } from '$lib/core/UnionCore';
-
+import { BaseChatLink, type BaseChat, type BaseData } from '$lib/core/UnionCore';
 
 // 扩展实现QQChatLink
 
@@ -46,6 +45,7 @@ interface Say {
 	name?: string;
 	qq?: string;
 	file?: string;
+	img_file?: File;
 	file_size?: string | number;
 	url?: string;
 	subtype?: number;
@@ -93,6 +93,10 @@ interface QQBaseChat extends BaseChat {
 }
 
 class QQChatLink extends BaseChatLink {
+	constructor(woke_type: 'show' | 'hide', id: string, link_url: string) {
+		super(woke_type, id, link_url);
+		this.toBaseData = this.toBaseData.bind(this);
+	}
 	// QQChatLink 独有的toBaseData
 	toBaseData(data: Message): BaseChat {
 		if (data.message_type === 'group') {
@@ -100,16 +104,23 @@ class QQChatLink extends BaseChatLink {
 				session_id: data.group_id?.toString() || '',
 				sender_id: data.sender.card || data.sender.nickname || data.sender.user_id.toString(),
 				message_type: data.sub_type,
-				raw: data.message
+				raw: this.toBaseRaw(data.message),
+				// `https://p.qlogo.cn/gh/${message.group_id}/${message.group_id}/0`
+				sender_img_url: `https://p.qlogo.cn/gh/${data.group_id}/${data.group_id}/0`,
+				sender_img_type: 'url'
 			};
 		} else if (data.message_type === 'private') {
 			return {
 				session_id: data.user_id.toString(),
 				sender_id: data.sender.card || data.sender.nickname || data.sender.user_id.toString(),
 				message_type: data.sub_type,
-				raw: data.message
+				raw: this.toBaseRaw(data.message),
+				sender_img_type: 'url',
+				// https://q1.qlogo.cn/g?b=qq&nk=${message.user_id}&s=100
+				sender_img_url: `https://q1.qlogo.cn/g?b=qq&nk=${data.user_id}&s=100`
 			};
 		} else {
+			console.log('未知的消息类型', data);
 			return {
 				session_id: '',
 				sender_id: '',
@@ -119,8 +130,28 @@ class QQChatLink extends BaseChatLink {
 		}
 	}
 
-	RenderData(baseData: QQBaseChat) {
-		
+	RenderData(baseData: QQBaseChat) {}
+	toBaseRaw(msg: MessageData[]): BaseData[] {
+		return msg.map((item) => {
+			let data: BaseData = {
+				type: item.type
+			};
+			if (item.data.text) {
+				data.text = item.data.text;
+			}
+
+			if (item.data.img_file) {
+				data.type = 'image_file';
+				data.img_file = item.data.img_file;
+				return data;
+			}
+			if (item.data.url) {
+				data.type = 'image_url';
+				data.url = item.data.url;
+				console.log(item);
+			}
+			return data;
+		});
 	}
 }
 

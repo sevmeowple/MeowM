@@ -8,15 +8,19 @@ import { init, classModule, propsModule, styleModule, eventListenersModule } fro
 const patch = init([classModule, propsModule, styleModule, eventListenersModule]);
 
 interface BaseData {
+	type: string;
 	text?: string;
-	poke?: string;
-	image?: string;
+	img_file?: File;
+	url?: string;
 }
 
 interface BaseChat {
 	session_id: string;
 	sender_id: string;
 	message_type: string;
+	sender_img_file?: File;
+	sender_img_url?: string;
+	sender_img_type?: string; //'file' | 'url'
 	target_id?: string;
 	raw: BaseData[];
 }
@@ -43,6 +47,7 @@ interface BaseChatLink {
 	toBaseData(data: any): BaseChat;
 	DataUpdate(baseData: BaseChat): void;
 	RenderData(baseData: BaseChat): any;
+	toBaseRaw(data: any[]): BaseData[];
 }
 
 // 具体实现BaseChatLink
@@ -87,9 +92,7 @@ class BaseChatLink implements BaseChatLink {
 		this.link_status = false;
 	}
 
-	RenderData(baseData: BaseChat) {
-		
-	}
+	RenderData(baseData: BaseChat) {}
 }
 
 export type { BaseData, BaseChat };

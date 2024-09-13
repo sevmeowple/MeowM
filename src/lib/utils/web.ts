@@ -20,6 +20,10 @@ async function GetLinked(
 			try {
 				data = JSON.parse(msg.data);
 				const baseData = toBaseData(data);
+				// 排除error的情况
+				if (baseData.message_type === 'error') {
+					return;
+				}
 				DataUpdate(baseData);
 			} catch (e) {
 				console.error(e);
