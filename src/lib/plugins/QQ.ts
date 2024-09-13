@@ -1,3 +1,8 @@
+import { BaseChatLink, type BaseChat } from '$lib/core/UnionCore';
+
+
+// 扩展实现QQChatLink
+
 // 定义消息发送者的结构
 interface Sender {
 	user_id: number;
@@ -71,11 +76,52 @@ interface Message {
 	sender: Sender;
 	raw_message: string;
 	font: number;
-	sub_type: string; // 比如 "normal"||poke
+	sub_type: string; // 比如 "normal"
 	message: MessageData[]; // 消息体中的数据数组
 	message_format: string; // "array"
 	post_type: string; // 比如 "message"
 	group_id?: number;
 }
 
-export type { Sender, MessageData, Message };
+enum QQBaseChatType {
+	normal = 'normal',
+	poke = 'poke'
+}
+
+interface QQBaseChat extends BaseChat {
+	message_type: QQBaseChatType;
+}
+
+class QQChatLink extends BaseChatLink {
+	// QQChatLink 独有的toBaseData
+	toBaseData(data: Message): BaseChat {
+		if (data.message_type === 'group') {
+			return {
+				session_id: data.group_id?.toString() || '',
+				sender_id: data.sender.card || data.sender.nickname || data.sender.user_id.toString(),
+				message_type: data.sub_type,
+				raw: data.message
+			};
+		} else if (data.message_type === 'private') {
+			return {
+				session_id: data.user_id.toString(),
+				sender_id: data.sender.card || data.sender.nickname || data.sender.user_id.toString(),
+				message_type: data.sub_type,
+				raw: data.message
+			};
+		} else {
+			return {
+				session_id: '',
+				sender_id: '',
+				message_type: 'error',
+				raw: []
+			};
+		}
+	}
+
+	RenderData(baseData: QQBaseChat) {
+		
+	}
+}
+
+export { QQChatLink };

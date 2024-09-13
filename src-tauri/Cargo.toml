@@ -22,6 +22,9 @@ tokio = { version = "1.40.0", features = ["full"] }
 tokio-tungstenite = "0.23.1"
 futures-util = { version = "0.3.30" }
 url = { version = "2.5.2" }
+tauri-plugin-websocket = "2.0.0-rc"
+
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

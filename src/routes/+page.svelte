@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 
 	import Damuku from '$lib/components/damuku.svelte';
+	import DamukuT from '$lib/components/damukuT.svelte';
 
 	import { invoke } from '@tauri-apps/api/core';
 const appWindow = getCurrentWebviewWindow()
@@ -55,7 +56,7 @@ const appWindow = getCurrentWebviewWindow()
 	<div class="container_body">
 		<div class="title"><p class="title-p">MeowQ Space</p></div>
 		<div class="content">
-			<Damuku />
+			<DamukuT />
 		</div>
 	</div>
 </main>

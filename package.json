@@ -42,6 +42,8 @@
   "dependencies": {
     "@sveltejs/adapter-static": "^3.0.4",
     "@tauri-apps/api": "2.0.0-rc.0",
-    "@tauri-apps/cli": "^2.0.0-rc.13"
+    "@tauri-apps/cli": "^2.0.0-rc.13",
+    "@tauri-apps/plugin-websocket": "2.0.0-rc.1",
+    "snabbdom": "^3.6.2"
   }
 }
