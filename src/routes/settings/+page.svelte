@@ -3,16 +3,7 @@
 	import { chatLinks, registerChatLink, selfStatus } from '$lib/stores/ChatLinkStore';
 	import { QQChatLink } from '$lib/plugins/QQ';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
-	import { InputChip } from '@skeletonlabs/skeleton';
 	const store = new Store('settings');
-
-	interface LinkInstance {
-		link_url: string;
-		mode: 'show' | 'hide';
-		Show(id: string): void;
-		Hide(id: string): void;
-	}
 
 	interface Link {
 		status: string;
@@ -24,24 +15,19 @@
 	let name: string = 'QQ';
 	let link: string = 'ws://127.0.0.1:3002';
 	let links: { [key: string]: Link } = {};
-	let list: string[] = [];
+	let newItem: string = '';
 	function LinkQQ() {
 		const QQ = new QQChatLink(mode, name, link);
 		registerChatLink(name, QQ);
 	}
 
-	function handleAdd(
-		event: CustomEvent<{ event: KeyboardEvent; chipIndex: number; chipValue: string }>
-	) {
-		const instance = links['QQ'].instance;
-		instance.Show(event.detail.chipValue);
+	function AddItem() {
+		links['QQ'].instance.Add(newItem);
+		newItem = '';
 	}
 
-	function handleRemove(
-		event: CustomEvent<{ event: MouseEvent; chipIndex: number; chipValue: string }>
-	) {
-		const instance = links['QQ'].instance;
-		instance.Hide(event.detail.chipValue);
+	function RemoveItem(item: string) {
+		links['QQ'].instance.Remove(item);
 	}
 
 	onMount(() => {
@@ -74,24 +60,52 @@
 						>
 					</div>
 					<div class="mt-4 w-full">
-						<h2 class="text-xl font-bold mb-2">{mode === 'show' ? 'Whitelist' : 'Blacklist'}</h2>
-						{#if mode === 'show'}
-							<InputChip
-								bind:value={links[key].instance.show}
-								name="chips"
-								placeholder="Enter any value..."
-								on:add={handleAdd}
-								on:remove={handleRemove}
+						<h2 class="text-xl font-bold mb-2">
+							{links[key].instance.mode === 'show' ? 'Whitelist' : 'Blacklist'}
+						</h2>
+						<button
+							on:click={() =>
+								(links[key].instance.mode = links[key].instance.mode === 'show' ? 'hide' : 'show')}
+							class="p-2 bg-gray-500 text-white rounded mb-4"
+						>
+							切换到 {links[key].instance.mode === 'show' ? 'Blacklist' : 'Whitelist'}
+						</button>
+
+						<div class="flex gap-2 mb-4">
+							<input
+								type="text"
+								bind:value={newItem}
+								placeholder="输入新条目"
+								class="p-2 border rounded flex-grow"
 							/>
-						{:else}
-							<InputChip
-								bind:value={links[key].instance.hide}
-								name="chips"
-								placeholder="Enter any value..."
-								on:add={handleAdd}
-								on:remove={handleRemove}
-							/>
-						{/if}
+							<button
+								on:click={AddItem}
+								class="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">添加</button
+							>
+						</div>
+						<ul>
+							{#if links[key].instance.mode === 'show' && links[key].instance.show}
+								{#each links[key].instance.show as item}
+									<li class="flex justify-between items-center p-2 border-b">
+										<span>{item}</span>
+										<button
+											on:click={() => RemoveItem(item)}
+											class="text-red-500 hover:text-red-700">删除</button
+										>
+									</li>
+								{/each}
+							{:else if links[key].instance.mode === 'hide' && links[key].instance.hide}
+								{#each links[key].instance.hide as item}
+									<li class="flex justify-between items-center p-2 border-b">
+										<span>{item}</span>
+										<button
+											on:click={() => RemoveItem(item)}
+											class="text-red-500 hover:text-red-700">删除</button
+										>
+									</li>
+								{/each}
+							{/if}
+						</ul>
 					</div>
 				</div>
 			{/each}

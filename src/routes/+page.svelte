@@ -2,7 +2,6 @@
     import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
     import { onMount } from 'svelte';
 
-    import Damuku from '$lib/components/damuku.svelte';
     import DamukuT from '$lib/components/damukuT.svelte';
 
     import { invoke } from '@tauri-apps/api/core';

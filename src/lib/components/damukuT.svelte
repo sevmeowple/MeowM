@@ -15,7 +15,6 @@
 
 	if (store) {
 		store.subscribe((value) => {
-			console.log(value);
 			show = value;
 			scrollChatBottom('smooth');
 		});

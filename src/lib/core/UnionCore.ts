@@ -41,6 +41,8 @@ interface BaseChatLink {
 	DisLink(): void;
 	Show(id: string): void; //白名单模式下的显示
 	Hide(id: string): void; //黑名单模式下的隐藏
+	Add(id: string): void;
+	Remove(id: string): void;
 	TypeChange: () => void;
 	toBaseData(data: any): BaseChat;
 	DataUpdate(baseData: BaseChat): void;
@@ -56,12 +58,8 @@ class BaseChatLink implements BaseChatLink {
 		this.mode = woke_type;
 		this.id = id;
 		this.link_url = link_url;
-		if (woke_type === 'show') {
-			this.show = [];
-		}
-		if (woke_type === 'hide') {
-			this.hide = [];
-		}
+		this.show = [];
+		this.hide = [];
 	}
 
 	Init(): void {
@@ -72,11 +70,17 @@ class BaseChatLink implements BaseChatLink {
 		if (this.mode === 'show') {
 			// 处理白名单模式
 			if (this.show && this.show.includes(baseData.session_id)) {
+				console.log(this.show);
+				console.log(baseData.session_id);
+				console.log(baseData);
 				storeManager.updateStore(this.id, baseData);
 			}
 		} else if (this.mode === 'hide') {
 			// 处理黑名单模式
 			if (!this.hide || !this.hide.includes(baseData.session_id)) {
+				console.log(this.hide);
+				console.log(baseData.session_id);
+				console.log(baseData);
 				storeManager.updateStore(this.id, baseData);
 			}
 		}
@@ -124,6 +128,26 @@ class BaseChatLink implements BaseChatLink {
 			// 如果是白名单模式,应该先从白名单中删除
 			if (this.show) {
 				this.show = this.show.filter((item) => item !== id);
+			}
+		}
+	}
+
+	Add(id: string) {
+		if (this.mode === 'show') {
+			this.Show(id);
+		} else {
+			this.Hide(id);
+		}
+	}
+
+	Remove(id: string) {
+		if (this.mode === 'show') {
+			if (this.show) {
+				this.Hide(id);
+			}
+		} else {
+			if (this.hide) {
+				this.Show(id);
 			}
 		}
 	}
