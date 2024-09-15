@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { Store } from '@tauri-apps/plugin-store';
 	import { chatLinks, registerChatLink, selfStatus } from '$lib/stores/ChatLinkStore';
 	import { QQChatLink } from '$lib/plugins/QQ';
 	import { onMount } from 'svelte';
-	const store = new Store('settings');
-
 	interface Link {
 		status: string;
 		instance: QQChatLink;

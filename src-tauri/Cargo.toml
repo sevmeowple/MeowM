@@ -24,6 +24,7 @@ futures-util = { version = "0.3.30" }
 url = { version = "2.5.2" }
 tauri-plugin-websocket = "2.0.0-rc"
 tauri-plugin-store = "2.0.0-rc"
+tauri-plugin-http = "2.0.0-rc"
 
 
 [features]
