@@ -1,6 +1,7 @@
 import { GetLinked } from '$lib/utils/web';
 import { storeManager } from '$lib/stores/DataStore';
 import WebSocket from '@tauri-apps/plugin-websocket';
+import LinkStore from '$lib/stores-tauri/LinkStore';
 
 import { init, classModule, propsModule, styleModule, eventListenersModule } from 'snabbdom';
 
@@ -63,7 +64,20 @@ class BaseChatLink implements BaseChatLink {
 	}
 
 	Init(): void {
-		// 初始化store
+		// Load data from store
+		//先检查是否存在该id的store
+		LinkStore.getChatLink(this.id).then((link) => {
+			console.log(link);
+			if (link) {
+				this.show = link.show;
+				this.hide = link.hide;
+			} else {
+				LinkStore.setChatLink(this.id, this);
+			}
+			LinkStore.getChatLink(this.id).then((link) => {
+				console.log(link);
+			});
+		});
 	}
 
 	DataUpdate(baseData: BaseChat): void {
@@ -84,6 +98,11 @@ class BaseChatLink implements BaseChatLink {
 				storeManager.updateStore(this.id, baseData);
 			}
 		}
+		// Save data to store
+		LinkStore.setChatLink(this.id, this);
+		LinkStore.getChatLink(this.id).then((link) => {
+			console.log(link);
+		});
 	}
 
 	async Link() {
@@ -110,10 +129,13 @@ class BaseChatLink implements BaseChatLink {
 				this.show = [];
 			}
 			this.show.push(id);
+			// 显式添加来触发响应式
+			this.show = this.show;
 		} else {
 			// 如果是黑名单模式,应该先从黑名单中删除
 			if (this.hide) {
 				this.hide = this.hide.filter((item) => item !== id);
+				this.hide = this.hide;
 			}
 		}
 	}
@@ -124,10 +146,13 @@ class BaseChatLink implements BaseChatLink {
 				this.hide = [];
 			}
 			this.hide.push(id);
+			// 显式添加来触发响应式
+			this.hide = this.hide;
 		} else {
 			// 如果是白名单模式,应该先从白名单中删除
 			if (this.show) {
 				this.show = this.show.filter((item) => item !== id);
+				this.show = this.show;
 			}
 		}
 	}
